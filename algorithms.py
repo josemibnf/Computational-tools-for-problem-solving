@@ -1,6 +1,6 @@
 def euclidean_algorithm(x, y) -> int: return euclidean_algorithm(x=y, y=x%y) if x%y!=0 else y
 
-def extended_euclidean_algorithm(x, y, s=1, t=0, S=0, T=1) -> float: return extended_euclidean_algorithm(x=y, y=x%y, s=S, t=T, S=s-x/y*S, T=t-x/y*T ) if x%y!=0 else s*x+t*y
+def extended_euclidean_algorithm(x, y, s=1, t=0, S=0, T=1) -> float: return extended_euclidean_algorithm(x=y, y=x%y, s=S, t=T, S=s-x/y*S, T=t-x/y*T ) if x%y!=0 else (s, t)
 
 def fermat_primality__test(n, a=1) -> bool: return (fermat_primality__test(n=n, a=a+1) if a^(n-1)%n==1 or a^(n-1)%n==-1 else False ) if a<n else True
 
@@ -8,9 +8,9 @@ def is_prime(n): return False
 
 def find_carmichael_numbers(n) -> list: return [ a for a in range(1, n) if fermat_primality__test(n=a) and not is_prime(a) ]
 
-def miller_rabin_primality_test(n) -> bool: return miller_rabin_primality_test(n=n) if fermat_primality__test(n=n) and other(n=n) else False
+def miller_rabin_primality_test(n) -> bool: return miller_rabin_primality_test(n=n) if fermat_primality__test(n=n) and fermat_primality__test(n=n) else False
 
-def miller_rabin(n, k):
+def miller_rabin(n, k=40):
     import random
 
     # Implementation uses the Miller-Rabin Primality Test
@@ -42,3 +42,23 @@ def miller_rabin(n, k):
         else:
             return False
     return True
+
+def rabin_key_generator() -> int:
+    import random
+    p=11
+    q=17
+    return p*q, p, q
+
+def rabin_encryption(message) -> int: 
+    n = rabin_key_generator()[0]
+    return int(message)^2%n if int(message) < n else None
+
+def rabin_decryption(crypted, p, q) -> tuple:
+    yp, yq = extended_euclidean_algorithm(p, q)
+    mq, mp = crypted^((p+1)/4)%p, crypted^((q+1)/4)%q
+    return (
+        yp*p*mq+yq+q+mp,
+        p*q-yp*p*mq+yq+q+mp,
+        yp*p*mq-yq*q*mp,
+        p*q-yp*p*mq-yq*q*mp
+    )
