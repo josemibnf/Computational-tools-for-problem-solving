@@ -17,16 +17,32 @@ def fermat_factory_method(n) -> tuple:
 
 def euler_function(n) -> int: return len([ m for m in range(1, n) if m<n and euclidean_algorithm(n,m)==1 ])
 
-def rsa_public_key_generator(n, p, q) -> int:
-    fi = (p-1)*(q-1)
-    for e in reversed(range(1, fi)):
-        if euclidean_algorithm(fi, e)==1:
-            return e
+class RSA:
+    def __init__(self, n, p, q):
+        self.n = n
+        self.p = p
+        self.q = q
+        self.calculate_keys()
 
-def rsa_private_key_generator(n, e) -> int:
-    for d in range(0, n):
-        if (e*d)%n==1:
-            return d
+    def public_key_generator(self) -> int:
+        fi = (self.p-1)*(self.q-1)
+        for e in reversed(range(1, fi)):
+            if euclidean_algorithm(fi, e)==1:
+                self.e = e
+
+    def private_key_generator(self) -> int:
+        for d in range(0, self.n):
+            if (self.e*d)%n==1:
+                self.d = d
+
+    def calculate_keys(self):
+        self.public_key_generator()
+        self.private_key_generator()
+
+    def encrypt(self, m) -> int: return (m^self.e)%self.n 
+
+    def decrypt(self, c) -> int: return (c^self.d)%self.n
+
 
 def find_carmichael_numbers(n) -> list: return [ a for a in range(1, n) if fermat_primality__test(n=a) and not miller_rabin(n=a) ]
 
@@ -89,5 +105,10 @@ class Rabin:
 if __name__ == "__main__":
     n = 17947
     e= 3929
-    fi = euler_function(n)
-    print(  )
+    rsa = RSA(n, 21, 11)
+
+    m = 12345
+    c = rsa.encrypt(m)
+    print(c)
+    print( rsa.decrypt(c=c) )
+
