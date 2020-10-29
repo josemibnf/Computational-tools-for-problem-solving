@@ -32,7 +32,7 @@ class RSA:
 
     def private_key_generator(self) -> int:
         for d in range(0, self.n):
-            if (self.e*d)%n==1:
+            if (self.e*d)%self.n==1:
                 self.d = d
 
     def calculate_keys(self):
@@ -43,43 +43,7 @@ class RSA:
 
     def decrypt(self, c) -> int: return (c^self.d)%self.n
 
-
-def find_carmichael_numbers(n) -> list: return [ a for a in range(1, n) if fermat_primality__test(n=a) and not miller_rabin(n=a) ]
-
-def miller_rabin_primality_test(n) -> bool: return miller_rabin_primality_test(n=n) if fermat_primality__test(n=n) and fermat_primality__test(n=n) else False
-
-def miller_rabin(n, k=40):
-    import random
-
-    # Implementation uses the Miller-Rabin Primality Test
-    # The optimal number of rounds for this test is 40
-    # See http://stackoverflow.com/questions/6325576/how-many-iterations-of-rabin-miller-should-i-use-for-cryptographic-safe-primes
-    # for justification
-
-    # If number is even, it's a composite number
-
-    if n == 2:
-        return True
-
-    if n % 2 == 0:
-        return False
-
-    r, s = 0, n - 1
-    while s % 2 == 0:
-        r += 1
-        s //= 2
-    for _ in range(k):
-        a = random.randrange(2, n - 1)
-        x = pow(a, s, n)
-        if x == 1 or x == n - 1:
-            continue
-        for _ in range(r - 1):
-            x = pow(x, 2, n)
-            if x == n - 1:
-                break
-        else:
-            return False
-    return True
+def find_carmichael_numbers(n) -> list: return [ a for a in range(1, n) if fermat_primality__test(n=a) and not Rabin.miller_rabin(n=a) ]
 
 class Rabin:
     def rabin_key_generator(self) -> int:
@@ -102,13 +66,54 @@ class Rabin:
             p*q-yp*p*mq-yq*q*mp
         )
 
+    @staticmethod
+    def miller_rabin_primality_test(n) -> bool: return Rabin.miller_rabin_primality_test(n=n) if fermat_primality__test(n=n) and fermat_primality__test(n=n) else False
+
+    @staticmethod
+    def miller_rabin(n, k=40):
+        import random
+
+        # Implementation uses the Miller-Rabin Primality Test
+        # The optimal number of rounds for this test is 40
+        # See http://stackoverflow.com/questions/6325576/how-many-iterations-of-rabin-miller-should-i-use-for-cryptographic-safe-primes
+        # for justification
+
+        # If number is even, it's a composite number
+
+        if n == 2:
+            return True
+
+        if n % 2 == 0:
+            return False
+
+        r, s = 0, n - 1
+        while s % 2 == 0:
+            r += 1
+            s //= 2
+        for _ in range(k):
+            a = random.randrange(2, n - 1)
+            x = pow(a, s, n)
+            if x == 1 or x == n - 1:
+                continue
+            for _ in range(r - 1):
+                x = pow(x, 2, n)
+                if x == n - 1:
+                    break
+            else:
+                return False
+        return True
+
+def baby_step_giant_step_algorithm(module, generator, number):
+    import math as math
+    # Solve x with number = generator^x (mod module)
+    s = math.ceil(math.sqrt(module))
+    for bs in  [ ( number*generator^j, j) for j in range(0, s+1) ]:
+        for gs in [ ( generator^(s*i), i) for i in range(0, s+1) ]:
+            if bs[0] == gs[0]: return gs[1]*bs[0]-bs[1]
+
 if __name__ == "__main__":
-    n = 17947
-    e= 3929
-    rsa = RSA(n, 21, 11)
-
-    m = 12345
-    c = rsa.encrypt(m)
-    print(c)
-    print( rsa.decrypt(c=c) )
-
+    print(baby_step_giant_step_algorithm(
+        module=19,
+        generator=10,
+        number=2
+    ))
