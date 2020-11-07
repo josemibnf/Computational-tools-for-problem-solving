@@ -111,9 +111,21 @@ def baby_step_giant_step_algorithm(module, generator, number):
         for gs in [ ( generator^(s*i), i) for i in range(0, s+1) ]:
             if bs[0] == gs[0]: return gs[1]*bs[0]-bs[1]
 
+class Elicptic_Curve_Arithmetic:
+
+    VECTOR_SUM = lambda x, y: ( x[0]+y[0], x[1]+y[1])
+    
+    DOUBLE_VECTOR = lambda x: ( x[0]+x[0], x[1]+x[1])
+
+    NEGATIVE_POINT = lambda x: ( x[0]*(-1), x[1]*(-1))
+
+    @staticmethod
+    def scalar_multiplication(P: tuple, k: int): return Elicptic_Curve_Arithmetic.VECTOR_SUM( Elicptic_Curve_Arithmetic.scalar_multiplication(P, k-1), P) if k>1 else P
+
+    @staticmethod
+    def discrete_logarithm_problem( Q: tuple, P: tuple, number: int):
+        for k in range(number): 
+            if Elicptic_Curve_Arithmetic.scalar_multiplication(P=P, k=k) == Q: return k
+
 if __name__ == "__main__":
-    print(baby_step_giant_step_algorithm(
-        module=19,
-        generator=10,
-        number=2
-    ))
+ pass
