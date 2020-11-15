@@ -15,7 +15,11 @@ def fermat_factory_method(n) -> tuple:
         sh = math.sqrt(abs(h))
     return k-sh, k+sh
 
-def euler_function(n) -> int: return len([ m for m in range(1, n) if m<n and euclidean_algorithm(n,m)==1 ])
+def euler_function_with_euclidean(n) -> int: return len([ m for m in range(1, n+1) if euclidean_algorithm(n,m)==1 ])
+
+def euler_function_with_fermat(n) -> int:
+    p, q = fermat_factory_method(n)
+    return int((p-1)*(q-1))
 
 class RSA:
     def __init__(self, n, p, q):
@@ -25,14 +29,16 @@ class RSA:
         self.calculate_keys()
 
     def public_key_generator(self) -> int:
-        fi = (self.p-1)*(self.q-1)
-        for e in reversed(range(1, fi)):
-            if euclidean_algorithm(fi, e)==1:
+        # maximo_comun_divisor(e, fi) = 1
+        self.fi = (self.p-1)*(self.q-1)
+        for e in range(self.fi, 0):
+            if euclidean_algorithm(self.fi, e)==1:
                 self.e = e
 
     def private_key_generator(self) -> int:
+        # d*e=1 (mod fi)
         for d in range(0, self.n):
-            if (self.e*d)%self.n==1:
+            if (self.e*d)%self.fi==1:
                 self.d = d
 
     def calculate_keys(self):
@@ -126,6 +132,13 @@ class ElicpticCurveArithmetic:
     def discrete_logarithm_problem( Q: tuple, P: tuple, number: int):
         for k in range(number): 
             if ElicpticCurveArithmetic.scalar_multiplication(P=P, k=k) == Q: return k
+
+class ElGamal:
+    pass
+
+class Diffie_Hellman:
+    pass
+
 
 class AffineCaesarCipher:
     
