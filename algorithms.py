@@ -1,6 +1,6 @@
 def euclidean_algorithm(x, y) -> int: return euclidean_algorithm(x=y, y=x%y) if x%y!=0 else y
 
-def extended_euclidean_algorithm(x, y, s=1, t=0, S=0, T=1) -> float: return extended_euclidean_algorithm(x=y, y=x%y, s=S, t=T, S=s-x/y*S, T=t-x/y*T ) if x%y!=0 else (s, t)
+def extended_euclidean_algorithm(x, y, s=1, t=0, S=0, T=1) -> tuple: return extended_euclidean_algorithm(x=y, y=x%y, s=S, t=T, S=s-x/y*S, T=t-x/y*T ) if x%y!=0 else (s, t)
 
 def fermat_primality__test(n, a=1) -> bool: return (fermat_primality__test(n=n, a=a+1) if a^(n-1)%n==1 or a^(n-1)%n==-1 else False ) if a<n else True
 
@@ -133,12 +133,6 @@ class ElicpticCurveArithmetic:
         for k in range(number): 
             if ElicpticCurveArithmetic.scalar_multiplication(P=P, k=k) == Q: return k
 
-class ElGamal:
-    pass
-
-class Diffie_Hellman:
-    pass
-
 
 class AffineCaesarCipher:
     
@@ -158,6 +152,3 @@ class AffineCaesarCipher:
 
     @staticmethod
     def find_key_pair_of_c(c): return None, None
-
-if __name__ == "__main__":
- pass
